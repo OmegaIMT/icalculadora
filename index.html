@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simulador de Juros Compostos</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<main class="container">
+
+    <form class="card" id="form" novalidate>
+        <div class="topo">
+            <h1>Simulador de Juros Compostos</h1>
+            <div class="modos" role="tablist" aria-label="Tipo de simulação">
+                <button type="button" class="nota nota-10 ativa" data-modo="simples"><span>Simples</span></button>
+                <button type="button" class="nota nota-50" data-modo="avancado"><span>Avançada</span></button>
+            </div>
+        </div>
+
+        <div class="alerta" id="erros" hidden></div>
+
+        <!-- ================= Simples ================= -->
+        <fieldset id="modo-simples">
+            <div class="grade" id="linha-valores">
+                <div class="campo">
+                    <label for="valor_inicial">Valor inicial</label>
+                    <div class="grupo">
+                        <span class="prefixo">R$</span>
+                        <input type="text" inputmode="numeric" class="moeda" id="valor_inicial" name="valor_inicial" placeholder="0,00">
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="deposito_mensal">Depósito mensal</label>
+                    <div class="grupo">
+                        <span class="prefixo">R$</span>
+                        <input type="text" inputmode="numeric" class="moeda" id="deposito_mensal" name="deposito_mensal" placeholder="0,00">
+                    </div>
+                </div>
+
+                <div class="campo so-retirada">
+                    <label for="retirada_mensal">Retirada mensal</label>
+                    <div class="grupo">
+                        <span class="prefixo" id="retirada-prefixo">R$</span>
+                        <input type="text" inputmode="numeric" id="retirada_mensal" name="retirada_mensal" placeholder="0,00">
+                        <select name="retirada_tipo" id="retirada_tipo" aria-label="Tipo da retirada">
+                            <option value="fixo">valor fixo</option>
+                            <option value="liquida">% líquida</option>
+                            <option value="bruta">% bruta</option>
+                        </select>
+                    </div>
+                    <small id="retirada-dica" hidden>Líquida: % do saldo sem os juros acumulados. Bruta: % do valor total, juros incluídos.</small>
+                </div>
+            </div>
+
+            <div class="grade">
+                <div class="campo">
+                    <label for="taxa">Taxa de juros</label>
+                    <div class="grupo">
+                        <span class="prefixo">%</span>
+                        <input type="text" inputmode="decimal" class="decimal" id="taxa" name="taxa" placeholder="0">
+                        <select name="taxa_tipo" aria-label="Tipo da taxa">
+                            <option value="anual">anual</option>
+                            <option value="mensal">mensal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="periodo">Período</label>
+                    <div class="grupo">
+                        <input type="text" inputmode="numeric" class="inteiro" id="periodo" name="periodo" placeholder="0">
+                        <select name="periodo_tipo" aria-label="Unidade do período">
+                            <option value="anos">ano(s)</option>
+                            <option value="meses">mês(es)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grade so-retirada">
+                <div class="campo">
+                    <label for="retirada_apos">Iniciar retiradas após</label>
+                    <div class="grupo">
+                        <input type="text" inputmode="numeric" class="inteiro" id="retirada_apos" name="retirada_apos" value="0">
+                        <select name="retirada_apos_tipo" aria-label="Unidade do início das retiradas">
+                            <option value="anos">ano(s)</option>
+                            <option value="meses">mês(es)</option>
+                        </select>
+                    </div>
+                    <small>0 = retira desde o 1º mês. As retiradas acontecem depois dos juros do mês.</small>
+                </div>
+                <div class="campo campo-check">
+                    <label class="check">
+                        <input type="checkbox" name="parar_depositos" value="1" checked>
+                        Parar depósitos quando começar a retirar
+                    </label>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- ================= Avançada ================= -->
+        <fieldset id="modo-avancado" disabled hidden>
+            <p class="dica">Preencha <b>um</b> de cada par: valor final <b>ou</b> renda desejada; valor mensal <b>ou</b> período.
+                O que ficar em branco é calculado.</p>
+
+            <div class="grade">
+                <div class="campo">
+                    <label for="av-valor_final">Valor final desejado</label>
+                    <div class="grupo">
+                        <span class="prefixo">R$</span>
+                        <input type="text" inputmode="numeric" class="moeda" id="av-valor_final" name="valor_final" placeholder="0,00"
+                               data-exclui="av-renda_hoje av-ir_tipo av-ir_outra">
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="av-renda_hoje">Poder de compra desejado hoje (renda mensal)</label>
+                    <div class="grupo">
+                        <span class="prefixo">R$</span>
+                        <input type="text" inputmode="numeric" class="moeda" id="av-renda_hoje" name="renda_hoje" placeholder="0,00"
+                               data-exclui="av-valor_final">
+                    </div>
+                    <small>Valor que você quer receber no bolso, já descontado o imposto escolhido abaixo.</small>
+                </div>
+            </div>
+
+            <div class="grade">
+                <div class="campo">
+                    <label for="av-deposito_mensal">Valor mensal para guardar</label>
+                    <div class="grupo">
+                        <span class="prefixo">R$</span>
+                        <input type="text" inputmode="numeric" class="moeda" id="av-deposito_mensal" name="deposito_mensal" placeholder="0,00"
+                               data-exclui="av-periodo av-periodo_tipo">
+                    </div>
+                    <label class="check pequeno">
+                        <input type="checkbox" name="corrigir_deposito" value="1" checked>
+                        Corrigir o valor mensal pela inflação todo mês
+                    </label>
+                </div>
+
+                <div class="campo">
+                    <label for="av-periodo">Período</label>
+                    <div class="grupo">
+                        <input type="text" inputmode="numeric" class="inteiro" id="av-periodo" name="periodo" placeholder="0"
+                               data-exclui="av-deposito_mensal">
+                        <select id="av-periodo_tipo" name="periodo_tipo" aria-label="Unidade do período">
+                            <option value="anos">ano(s)</option>
+                            <option value="meses">mês(es)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grade">
+                <div class="campo">
+                    <label for="av-taxa">Taxa de juros</label>
+                    <div class="grupo">
+                        <span class="prefixo">%</span>
+                        <input type="text" inputmode="decimal" class="decimal" id="av-taxa" name="taxa" placeholder="0">
+                        <select name="taxa_tipo" aria-label="Tipo da taxa">
+                            <option value="anual">anual</option>
+                            <option value="mensal">mensal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="av-inflacao">Média de inflação</label>
+                    <div class="grupo">
+                        <span class="prefixo">%</span>
+                        <input type="text" inputmode="decimal" class="decimal" id="av-inflacao" name="inflacao" placeholder="0">
+                        <span class="sufixo">ao ano</span>
+                    </div>
+                    <small id="inflacao-fonte"></small>
+                </div>
+            </div>
+
+            <div class="grade">
+                <div class="campo">
+                    <label for="av-valor_inicial">Valor já investido <span class="opcional">(opcional)</span></label>
+                    <div class="grupo">
+                        <span class="prefixo">R$</span>
+                        <input type="text" inputmode="numeric" class="moeda" id="av-valor_inicial" name="valor_inicial" placeholder="0,00">
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="av-ir_tipo">Imposto sobre a renda</label>
+                    <div class="grupo">
+                        <select id="av-ir_tipo" name="ir_tipo" class="select-cheio" aria-label="Imposto de renda sobre os rendimentos">
+                            <option value="0">Isento — FIIs, dividendos, LCI/LCA</option>
+                            <option value="15">15% — renda fixa acima de 2 anos</option>
+                            <option value="22.5">22,5% — renda fixa até 6 meses</option>
+                            <option value="outra">Outra alíquota</option>
+                        </select>
+                        <span class="ir-outra" hidden>
+                            <input type="text" inputmode="decimal" class="decimal" id="av-ir_outra" name="ir_outra" placeholder="0" aria-label="Alíquota de IR">
+                            <span class="sufixo">%</span>
+                        </span>
+                    </div>
+                    <small>Só vale para a renda desejada (fase de retiradas).</small>
+                </div>
+            </div>
+
+            <details class="saiba-mais">
+                <summary>Quando eu pago IR sobre a renda?</summary>
+                <ul>
+                    <li><b>FIIs:</b> os rendimentos mensais são <b>isentos</b> para pessoa física quando o fundo tem 100 cotistas ou mais,
+                        as cotas são negociadas em bolsa e você tem menos de 10% das cotas. Lucro na venda das cotas paga <b>20%</b>.</li>
+                    <li><b>Ações — dividendos:</b> <b>isentos</b>. Desde 2026 há retenção de 10% só sobre dividendos acima de
+                        R$ 50 mil por mês da mesma empresa, e um IR mínimo para quem ganha mais de R$ 600 mil por ano.</li>
+                    <li><b>Ações — JCP</b> (juros sobre capital próprio): <b>15%</b> retido na fonte.</li>
+                    <li><b>Ações — venda com lucro:</b> 15% sobre o ganho; vendas de até R$ 20 mil no mês são isentas (exceto day trade).</li>
+                    <li><b>Renda fixa</b> (CDB, Tesouro Direto, debêntures comuns): tabela regressiva — 22,5% até 6 meses, 20% até 1 ano,
+                        17,5% até 2 anos e <b>15% acima de 2 anos</b>. LCI, LCA, CRI, CRA e debêntures incentivadas são isentas.</li>
+                </ul>
+                <p>Informação geral, não é recomendação de investimento. As regras mudam; confirme com um contador.</p>
+            </details>
+        </fieldset>
+
+        <div class="acoes">
+            <button type="submit" class="nota nota-100" title="Calcular"><span>Calcular</span></button>
+            <div class="acoes-dir">
+                <button type="button" class="link" id="toggle-retirada">Simular retiradas mensais</button>
+                <button type="button" class="btn-secundario" id="gerar-pdf" hidden>Gerar PDF</button>
+                <button type="button" class="link escuro" id="limpar">Limpar</button>
+            </div>
+        </div>
+    </form>
+
+    <section class="card" id="resultado" hidden>
+        <h2>Resultado</h2>
+
+        <div class="cards" id="cards"></div>
+        <ul class="info" id="info"></ul>
+
+        <h3>Evolução do patrimônio</h3>
+        <div class="grafico">
+            <canvas id="grafico" height="320"></canvas>
+            <div class="tooltip" id="tooltip" hidden></div>
+        </div>
+        <div class="legenda" id="legenda"></div>
+
+        <div class="tabela-topo">
+            <h3>Tabela</h3>
+            <div class="abas" id="abas" role="tablist">
+                <button type="button" class="ativa" data-aba="anual">Anual</button>
+                <button type="button" data-aba="mensal">Mensal</button>
+            </div>
+        </div>
+        <div class="tabela-wrap"><table id="tabela"></table></div>
+    </section>
+</main>
+
+<script src="assets/calculadora.js"></script>
+<script src="assets/pdf.js"></script>
+<script src="assets/relatorio.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

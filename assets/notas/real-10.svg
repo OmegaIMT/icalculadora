@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 100">
+  <defs>
+    <linearGradient id="fundo" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f6d5c8"/>
+      <stop offset=".5" stop-color="#eebaa6"/>
+      <stop offset="1" stop-color="#f3cdb9"/>
+    </linearGradient>
+    <pattern id="linhas" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+      <line x1="0" y1="0" x2="0" y2="10" stroke="#e4a58f" stroke-width=".7"/>
+    </pattern>
+  </defs>
+  <rect width="240" height="100" rx="5" fill="url(#fundo)"/>
+  <rect width="240" height="100" rx="5" fill="url(#linhas)" opacity=".6"/>
+  <rect x="5" y="5" width="230" height="90" rx="3" fill="none" stroke="#a83a2a" stroke-width="1.5"/>
+
+  <text x="120" y="17" font-family="Arial, sans-serif" font-size="6.5" font-weight="bold" text-anchor="middle" fill="#8c2d20" letter-spacing="1">BANCO CENTRAL DO BRASIL</text>
+
+  <!-- efígie da República -->
+  <ellipse cx="62" cy="54" rx="22" ry="27" fill="#f9e3d9" stroke="#a83a2a" stroke-width="1"/>
+  <circle cx="62" cy="47" r="9" fill="#c9705a"/>
+  <path d="M45 76 Q47 59 62 58 Q77 59 79 76 Z" fill="#c9705a"/>
+  <path d="M53 40 q9 -9 18 0" fill="none" stroke="#7d9a4a" stroke-width="2.2"/>
+
+  <!-- tartaruga-marinha -->
+  <g transform="translate(176 54) rotate(-20)">
+    <ellipse rx="19" ry="13" fill="#b3523b" stroke="#7d2c1d" stroke-width="1"/>
+    <path d="M-10 -6 L0 -10 L10 -6 L10 6 L0 10 L-10 6 Z" fill="none" stroke="#f0bba6" stroke-width="1"/>
+    <ellipse cx="23" cy="0" rx="6" ry="4.5" fill="#b3523b"/>
+    <path d="M8 -11 q8 -12 18 -10 q-6 6 -12 13 z" fill="#b3523b"/>
+    <path d="M8 11 q8 12 18 10 q-6 -6 -12 -13 z" fill="#b3523b"/>
+    <path d="M-14 -9 q-6 -6 -10 -4 l7 7 z" fill="#b3523b"/>
+    <path d="M-14 9 q-6 6 -10 4 l7 -7 z" fill="#b3523b"/>
+  </g>
+
+  <!-- valores -->
+  <text x="14" y="31" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#8c2d20">10</text>
+  <text x="228" y="31" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="end" fill="#8c2d20">10</text>
+  <text x="228" y="88" font-family="Arial, sans-serif" font-size="9" font-weight="bold" text-anchor="end" fill="#8c2d20">10 REAIS</text>
+  <text x="14" y="88" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#8c2d20">R$</text>
+</svg>
